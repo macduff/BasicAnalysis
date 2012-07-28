@@ -14,7 +14,7 @@ apple.test <- reqHistoricalData(tws,
 
 #WTF IS THIS CODE BOOK3???
 zy = 155
-book3 = 100
+book3 = 2000
 
 Sys.sleep(10) # mandatory 10s between request to avoid IB pacing violation see the following link for more info
 #http://www.interactivebrokers.com/php/apiUsersGuide/apiguide/api/historical_data_limitations.htm
