@@ -2,11 +2,11 @@ library(IBrokers)
 tws <- twsConnect()
 
 
-getEQ_PriceHistory.IB <- function(Connection=tws, ticker='AAPL') {
+getEQ_PriceHistory.IB <- function(Connection=tws, ticker='AAPL', metric = 'BID_ASK') {
   equity.contract <- twsEquity(ticker)
   equity.hist.price <- reqHistory(Connection,
                                   equity.contract,
-                                  whatToShow = "BID_ASK")
+                                  whatToShow = metric)
   
   
   #Sys.sleep(10)

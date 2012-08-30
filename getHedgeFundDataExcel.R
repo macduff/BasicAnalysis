@@ -38,29 +38,23 @@ getTop <- function(N = 10, portfolio.data, reb.date) {
     print("Getting portfolio data")
   }
 
-  x1 <- ldply(portfolio.data, function(x) x[["Data"]][c("SECURITY","TICKER","X..PORT")])
-  x2 <- count(x1, c("SECURITY","TICKER"),"X..PORT")
-  x3 <- na.omit(arrange(x2,desc(freq))) ## OR x3 <- na.omit(x2[order(x2$freq,decreasing=T),])
-  x3$p <- x3$freq/sum(x3$freq)
-  x3$P <- cumsum(x3$p)
   ## Different approache to keep the Date information
-  x4 <- ldply(portfolio.data, function(x) cbind(x[["Data"]][c("SECURITY","TICKER","X..PORT")], x[["Rebalancing.date"]]))
-  names(x4)[4] <- "Rebalancing.Date"
-  x5 <- count(na.omit(x4), c("SECURITY","TICKER", "Rebalancing.Date") ,"X..PORT")
-  x6 <- arrange(x5,desc(Rebalancing.Date), desc(freq))
-  if (missing(reb.date)) reb.date <- unique(x4$Rebalancing.Date)
+  x1 <- ldply(portfolio.data, function(x) cbind(x[["Data"]][c("SECURITY","TICKER","X..PORT")], x[["Rebalancing.date"]]))
+  names(x1)[4] <- "Rebalancing.Date"
+  x2 <- count(na.omit(x1), c("SECURITY","TICKER", "Rebalancing.Date") ,"X..PORT")
+  x3 <- arrange(x2,desc(Rebalancing.Date), desc(freq))
+  if (missing(reb.date)) reb.date <- unique(x3$Rebalancing.Date)
   for (j in 1:length(reb.date)) {
     if (j == 1) {
       if (N > 1)
-        res <- x4[x4$Rebalancing.Date==reb.date[j],][1:N,]
-      else res <- x4[x4$Rebalancing.Date==reb.date[j],]
+        res <- x3[x3$Rebalancing.Date==reb.date[j],][1:N,]
+      else res <- x3[x3$Rebalancing.Date==reb.date[j],]
       }
     else {
       if (N > 1)
-        res <- rbind(res, x4[x4$Rebalancing.Date==reb.date[j],][1:N,])
-      else res <- rbind(res,x4[x4$Rebalancing.Date==reb.date[j],])
+        res <- rbind(res, x3[x3$Rebalancing.Date==reb.date[j],][1:N,])
+      else res <- rbind(res,x3[x3$Rebalancing.Date==reb.date[j],])
       }
     }
-  return(res)
-  
+  return(res)  
 }
