@@ -1,10 +1,10 @@
 library(IBrokers)
-tws <- twsConnect()
+#tws <- twsConnect()
 
-
-getEQ_PriceHistory.IB <- function(Connection=tws, ticker='AAPL') {
+#need short function name for pulling prices -> calling many times
+IB.EQ.PH <- function(Connection=tws, ticker='AAPL') {
   equity.contract <- twsEquity(ticker)
-  equity.hist.price <- reqHistory(Connection,
+  equity.hist.price <- reqHistoricalData(Connection,
                                   equity.contract,
                                   whatToShow = "BID_ASK")
   
