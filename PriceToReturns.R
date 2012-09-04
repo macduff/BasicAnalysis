@@ -75,3 +75,24 @@ MaxDrawDownStats <- function(strat.rets){
   
   return(draw.down.summary)
 }
+
+
+
+StdizeSeries <- function(xts.input){
+  ####   argument: must be a univariate xts object.  e.g. close or open series.
+  ####   return: a list containing the xts and dataframe form of the standardized price series
+  
+  names(xts.input) <- "price.data"
+  df.xts.input <- as.data.frame(xts.input)
+  time.label <-row.names(df.xts.input)
+  df.xts.input["time"] <-time.label
+  
+  stdize.price.ser <- (df.xts.input$price.data - mean(df.xts.input$price.data))/sd(df.xts.input$price.data)
+  
+  df.stdize.price.ser <- data.frame(stdize.price.ser)
+  rownames(df.stdize.price.ser) <- time.label
+  xts.stdize.price.ser <- as.xts(df.stdize.price.ser)
+  
+  stdized.price.ser.list <- list(xts.stdized.prices = xts.stdize.price.ser, df.stdized.prices = df.stdize.price.ser)
+  return(stdized.price.ser.list)
+}
