@@ -19,8 +19,9 @@ PriceToReturns <- function(xts.input){
   one.period.ret <- (df.xts.input$price.data[2:n] - df.xts.input$price.data[1:(n-1)])/ df.xts.input$price.data[1:(n-1)]
   
   #### This is a check on the return numbers   ######
-  one.period.ret.check <- diff(xts.input)/xts.input
+  one.period.ret.check <- diff(xts.input[1:10])/lag(xts.input[1:10])
   #gives slightly different answers to one.period.ret !!! ???
+  browser()
   
   time.label.ret <- time.label[-1]#drop first time point for the return series.
   df.rets <- data.frame(one.period.ret)
@@ -51,25 +52,43 @@ SharpeRatio <- function(strat.rets){
   #Sharpe ratio <1 suggests strategy is not so good.
   #strategy with profitability in most months produces sharpe ratio of >2
 }
+
 ##################################################################################
 #TO DO:  need to modify function to calculate drawdowns for any time frequncy. Currently based on daily returns
 ##################################################################################
 MaxDrawDownStats <- function(strat.rets){
 
   delta_t = 1  # length of time period in use
-  df.strat.rets <-strat.rets$df.returns
-  cum.ret <- cumprod(1+df.strat.rets[[1]])-1
+  cum.ret <- cumprod(1+coredata(strat.rets))-1
   high.water.mark <- rep(0, length(cum.ret))
   draw.down <- rep(0,length(cum.ret))
   draw.down.duration <- rep(0,length(cum.ret))
+  # we need to add 0 to cum.ret because index 1 is really time 0.
+  cum.ret <- c(0, cum.ret)
   
+  draw.down2 <- rep(0,length(cum.ret))
+  draw.down.duration2 <- rep(0,length(cum.ret))
+    
+  f_max <- function(x1, x2){ return(max(x1,x2))}
+  high.water.mark2 = Reduce(f_max  ,cum.ret[2:length(cum.ret)],init = 0, accumulate=TRUE)
+      
   for(t in 2:length(cum.ret)){
     high.water.mark[t] =  max(high.water.mark[t-1], cum.ret[t])#most recent fund maximum in terms of cum returns.
     draw.down[t] <- (1 + high.water.mark[t])/(1 + cum.ret[t]) - 1   #portfolio loss at time t
-    draw.down.duration[t] <- ifelse(draw.down[t] == 0,  0, draw.down.duration[t-1]+ delta_t)
-    max.draw.down = max(draw.down)
-    max.draw.down.duration = max(draw.down.duration)
+    draw.down.duration[t] <- ifelse(draw.down[t] == 0,  0, draw.down.duration[t-1] + delta_t)
+  
   }
+    draw.down2 <- (1 +high.water.mark2)/(1+cum.ret) -1
+   # draw.down.duration2[which(draw.down2 == 0)] = 0
+  
+    f_cond <- function(x1,x2)
+    {
+      return(ifelse(x2 == 0, 0, x1 + delta_t))  
+    }
+    draw.down.duration2 = Reduce(f_cond,draw.down2[2:length(draw.down2)], init = 0, accumulate=TRUE)
+  
+  max.draw.down = max(draw.down)
+  max.draw.down.duration = max(draw.down.duration)
   
   draw.down.summary <- list(max.draw.down = max.draw.down, max.draw.down.duration = max.draw.down.duration)
   
