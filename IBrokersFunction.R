@@ -27,8 +27,7 @@ getEQ <- function(Connection=tws, tickers.df) {
 }
 
 getEQ_Port <- function(Connection=tws, ticker.df=top15Tickers) {
-  require(plyr)
+  require(plyr)#inside function library call, inside function usage as opposed to "library"
   res <- dlply(ticker.df, 'SECURITY', getEQ, Connection=tws )
   return(res)
 }
-

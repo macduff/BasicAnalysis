@@ -1,5 +1,7 @@
-tws <- twsConnect()
-
+if(!existsFunction("twsConnect")){# this makes for better code handling
+  library(IBrokers)
+  tws <- twsConnect()
+}
 
 #Pull equity prices "after hours (AH)" using reqHistoricalData function.
 
