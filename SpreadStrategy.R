@@ -55,6 +55,7 @@ pnl.ts <- rowSums(Positions.Filled * Returns)
 
 SharpeRatio.DailyRet <- sqrt(252)* mean(pnl.ts,na.rm=TRUE)/ sd(pnl.ts,na.rm=TRUE)
 
+#
 
 # Now compute the spread
 #
